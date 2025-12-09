@@ -13,6 +13,8 @@ Ensure you have the following installed in your ROS 2 environment:
 * **ROS 2 Humble**
 * **SciPy**: `pip3 install scipy`
 * **NumPy**: `pip3 install numpy`
+* **Robotics Toolbox for Python**: `pip3 install roboticstoolbox-python`
+* **Spatial Math**: `pip3 install spatialmath-python`
 
 > **Note:** This package requires a custom interface package named `interface` containing the following services:
 > * `ControllerData.srv` (Request: `std_msgs/String mode`, `geometry_msgs/Point position` | Response: `bool success`)
@@ -54,6 +56,8 @@ Simulates joint movement by interpolating toward target positions.
 
 ```bash
 pip3 install scipy numpy
+pip3 install roboticstoolbox-python
+pip3 install spatialmath-python
 sudo apt install ros-humble-robot-state-publisher
 sudo apt install ros-humble-tf2-ros
 ```
@@ -125,6 +129,18 @@ When running `Teleop_jog_keyboard.py`, use the following keys:
 | `-` | Decrease Speed |
 | `Space` | Stop Movement |
 | `Esc` | Quit |
+
+> ⚠️ **Singularity Recovery:** If the robot stops moving during teleop due to singularity detection, you need to:
+> 1. Switch to another mode first (e.g., IK mode to move to a safe position)
+> 2. Then switch back to TO mode to continue teleop
+>
+> ```bash
+> # Move to safe position
+> ros2 service call /controller_server interface/srv/ControllerData "{mode: {data: 'IK'}, position: {x: 0.2, y: 0.0, z: 0.4}}"
+> 
+> # Switch back to TO mode
+> ros2 service call /controller_server interface/srv/ControllerData "{mode: {data: 'TO'}}"
+> ```
 
 ## 📡 Service API
 
