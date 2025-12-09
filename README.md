@@ -58,20 +58,20 @@ sudo apt install ros-humble-robot-state-publisher
 sudo apt install ros-humble-tf2-ros
 ```
 
-Go somewhere like your home directory and clone this package.
+Clone this package:
 
 ```bash
-git clone https://github.com/<your-username>/FRA502-LAB-6627.git
+git clone --branch LAB4 https://github.com/Narachon/FRA502-LAB-6627.git
 cd FRA502-LAB-6627/
 ```
 
-then build (inside FRA502-LAB-6627)
+Build:
 
 ```bash
 colcon build && source install/setup.bash
 ```
 
-Make scripts executable
+Make scripts executable:
 
 ```bash
 chmod +x src/control/scripts/*.py
@@ -87,19 +87,29 @@ source install/setup.bash
 ros2 launch control simple_display.launch.py
 ```
 
-**Terminal 2 - Teleop (Optional)**
+**Terminal 2 - Run Joint Simulator**
 ```bash
 source install/setup.bash
-ros2 run control Teleop_jog_keyboard.py
+ros2 run control jointstate_script.py
 ```
 
-**Terminal 3 - Service Calls**
+**Terminal 3 - Service Calls / Teleop**
 ```bash
 source install/setup.bash
 # See Service API below
 ```
 
 ## Teleop Controls
+
+> ⚠️ **Important:** Before running teleop, you must first switch to TO mode!
+
+```bash
+# Step 1: Switch to TO mode (World Frame)
+ros2 service call /controller_server interface/srv/ControllerData "{mode: {data: 'TO'}}"
+
+# Step 2: Run teleop node
+ros2 run control Teleop_jog_keyboard.py
+```
 
 When running `Teleop_jog_keyboard.py`, use the following keys:
 
@@ -121,23 +131,24 @@ When running `Teleop_jog_keyboard.py`, use the following keys:
 You can control the system modes manually using ROS 2 service calls:
 
 ### 1. Inverse Kinematics Mode (IK):
+Move robot to specific xyz position:
 ```bash
 ros2 service call /controller_server interface/srv/ControllerData "{mode: {data: 'IK'}, position: {x: 0.2, y: 0.1, z: 0.4}}"
 ```
 
 ### 2. Teleoperation Mode - World Frame:
 ```bash
-ros2 service call /controller_server interface/srv/ControllerData "{mode: {data: 'TO'}, position: {x: 0.0, y: 0.0, z: 0.0}}"
+ros2 service call /controller_server interface/srv/ControllerData "{mode: {data: 'TO'}}"
 ```
 
 ### 3. Teleoperation Mode - End Effector Frame:
 ```bash
-ros2 service call /controller_server interface/srv/ControllerData "{mode: {data: 'TO'}, position: {x: 1.0, y: 0.0, z: 0.0}}"
+ros2 service call /controller_server interface/srv/ControllerData "{mode: {data: 'TO'}, position: {x: 1.0}}"
 ```
 
 ### 4. Auto Mode (Random Pose Loop):
 ```bash
-ros2 service call /controller_server interface/srv/ControllerData "{mode: {data: 'AT'}, position: {x: 0.0, y: 0.0, z: 0.0}}"
+ros2 service call /controller_server interface/srv/ControllerData "{mode: {data: 'AT'}}"
 ```
 
 ## Technical Details
@@ -163,7 +174,7 @@ The controller checks `det(J)` continuously:
 
 ### Frame Handling
 In Teleoperation mode, `position.x` in service request determines frame:
-* `0.0` → World Frame
+* `0.0` (default) → World Frame
 * `1.0` → End Effector Frame
 
 ## Topics
