@@ -48,7 +48,7 @@ Generates valid random joint configurations for the robot.
 * **Service:** Provides the `/random_pose_server` service.
 * **Output:** Publishes `/target` for RViz visualization.
 
-### 4. `dummy_script.py` (Joint Simulator)
+### 4. `jointstate_script.py` (Joint Simulator)
 
 Simulates joint movement by interpolating toward target positions.
 
